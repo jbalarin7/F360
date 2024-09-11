@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finance360 - Gerencie suas Finanças com Inteligência</title>
+    <title>Portfólio - InvestControl</title>
     <!-- Adicionando a biblioteca Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -40,39 +40,48 @@
             color: black;
         }
 
-        .hero {
-            background-color: #e2f3e6;
-            padding: 50px;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3em;
-        }
-
-        .container {
-            margin: 20px auto;
-            padding: 20px;
-            max-width: 1200px;
-        }
-
-        .features {
+        /* Estilo para container do gráfico e tabela */
+        .portfolio-container {
             display: flex;
             justify-content: space-around;
-            margin-top: 40px;
-        }
-
-        .feature {
-            background-color: white;
+            align-items: flex-start;
+            margin: 40px auto;
+            max-width: 1200px;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 30%;
         }
 
-        .feature h3 {
-            color: #4CAF50;
+        /* Estilo para a área do gráfico */
+        .chart-container {
+            width: 50%;
+            text-align: center;
+        }
+
+        /* Estilo para a tabela */
+        .table-container {
+            width: 40%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1em;
+            min-width: 300px;
+        }
+
+        table, th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 12px;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
         }
 
         footer {
@@ -82,63 +91,69 @@
             padding: 10px 0;
             margin-top: 40px;
         }
-
-        /* Estilos para o gráfico */
-        .chart-container {
-            margin: 40px auto;
-            max-width: 600px;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Finance360</h1>
-        <p>Sua ferramenta de controle de finanças e investimentos</p>
+        <h1>Portfólio - Finance360</h1>
+        <p>Acompanhe o desempenho do seu portfólio</p>
     </header>
 
     <nav>
-        <a href="index.html">Tela Inicial</a>
+        <a href="index.html">Tela inicial</a>
         <a href="portfolio.html">Portfólio</a>
         <a href="#">Funcionalidades</a>
         <a href="#">Contato</a>
     </nav>
 
-    <section class="hero">
-        <h1>Gerencie suas Finanças com Inteligência</h1>
-        <p>Controle seus investimentos e alcance a independência financeira com o InvestControl.</p>
-        <button style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
-            Comece Agora
-        </button>
-    </section>
+    <!-- Seção do gráfico e da tabela -->
+    <div class="portfolio-container">
+        <!-- Área do gráfico -->
+        <div class="chart-container">
+            <h2>Portfólio Detalhado</h2>
+            <canvas id="portfolioChart" width="400" height="200"></canvas>
+        </div>
 
-    <div class="container">
-        <h2>Funcionalidades Principais</h2>
-        <div class="features">
-            <div class="feature">
-                <h3>Controle de Gastos</h3>
-                <p>Acompanhe suas despesas e mantenha seu orçamento em dia.</p>
-            </div>
-            <div class="feature">
-                <h3>Gestão de Investimentos</h3>
-                <p>Monitore seu portfólio e maximize seus retornos.</p>
-            </div>
-            <div class="feature">
-                <h3>Relatórios Detalhados</h3>
-                <p>Visualize relatórios completos para tomar decisões financeiras informadas.</p>
-            </div>
+        <!-- Área da tabela -->
+        <div class="table-container">
+            <h2>Lista de Ativos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ativo</th>
+                        <th>Valor (R$)</th>
+                        <th>Porcentagem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>PETR4</td>
+                        <td>1.800,00</td>
+                        <td>40%</td>
+                    </tr>
+                    <tr>
+                        <td>CPTS11</td>
+                        <td>1.500,00</td>
+                        <td>30%</td>
+                    </tr>
+                    <tr>
+                        <td>BBAS4</td>
+                        <td>1.700,00</td>
+                        <td>20%</td>
+                    </tr>
+                    <tr>
+                        <td>MXRF11</td>
+                        <td>1.600,00</td>
+                        <td>10%</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Seção para o gráfico -->
-    <div class="chart-container">
-        <h2>Portfólio Geral</h2>
-        <canvas id="portfolioChart" width="400" height="200"></canvas>
-    </div>
-
     <footer>
-        <p>&copy; 2024 Finance360. Todos os direitos reservados.</p>
+        <p>&copy; 2024 InvestControl. Todos os direitos reservados.</p>
     </footer>
 
     <!-- Script para renderizar o gráfico -->
