@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfólio - Finance360</title>
-    <!-- Adicionando a biblioteca Chart.js -->
+    <title>Portfólio - InvestControl</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
@@ -40,25 +39,21 @@
             color: black;
         }
 
-        /* Estilo para container do gráfico e tabela */
         .portfolio-container {
             display: flex;
-            justify-content: space-around;
-            align-items: flex-start;
+            justify-content: space-between;
             margin: 40px auto;
             max-width: 1200px;
             padding: 20px;
         }
 
-        /* Estilo para a área do gráfico */
         .chart-container {
-            width: 50%;
+            width: 60%;
             text-align: center;
         }
 
-        /* Estilo para a tabela */
         .table-container {
-            width: 40%;
+            width: 35%;
         }
 
         table {
@@ -84,6 +79,32 @@
             background-color: #f2f2f2;
         }
 
+        .form-container {
+            margin-top: 20px;
+        }
+
+        .form-container input, .form-container button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 1em;
+        }
+
+        .form-container input {
+            width: calc(50% - 22px);
+        }
+
+        .form-container button {
+            width: calc(50% - 22px);
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+
         footer {
             background-color: #333;
             color: white;
@@ -96,18 +117,19 @@
 <body>
 
     <header>
-        <h1>Portfólio - Finance360</h1>
+        <h1>Portfólio - InvestControl</h1>
         <p>Acompanhe o desempenho do seu portfólio</p>
     </header>
 
     <nav>
-        <a href="../index.html">Tela inicial</a>
-        <a href="portfolio.html">Portfólio</a>
+        <a href="../index.html">Início</a>
+        <a href="#">Sobre</a>
         <a href="#">Funcionalidades</a>
+        <a href="portifolio.html">Portfólio</a>
         <a href="#">Contato</a>
     </nav>
 
-    <!-- Seção do gráfico e da tabela -->
+    <!-- Seção do gráfico, tabela e formulário -->
     <div class="portfolio-container">
         <!-- Área do gráfico -->
         <div class="chart-container">
@@ -118,62 +140,46 @@
         <!-- Área da tabela -->
         <div class="table-container">
             <h2>Lista de Ativos</h2>
-            <table>
+            <table id="portfolioTable">
                 <thead>
                     <tr>
                         <th>Ativo</th>
                         <th>Valor (R$)</th>
                         <th>Porcentagem</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>PETR4</td>
-                        <td>1.800,00</td>
-                        <td>40%</td>
-                    </tr>
-                    <tr>
-                        <td>CPTS11</td>
-                        <td>1.500,00</td>
-                        <td>30%</td>
-                    </tr>
-                    <tr>
-                        <td>BBAS4</td>
-                        <td>1.700,00</td>
-                        <td>20%</td>
-                    </tr>
-                    <tr>
-                        <td>MXRF11</td>
-                        <td>1.600,00</td>
-                        <td>10%</td>
-                    </tr>
+                    <!-- Linhas serão adicionadas aqui dinamicamente -->
                 </tbody>
             </table>
+            <div class="form-container">
+                <h2>Adicionar Ativo</h2>
+                <input type="text" id="assetName" placeholder="Nome do Ativo" required>
+                <input type="number" id="assetValue" placeholder="Valor (R$)" required>
+                <button onclick="addAsset()">Adicionar</button>
+            </div>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2024 Finance360. Todos os direitos reservados.</p>
+        <p>&copy; 2024 InvestControl. Todos os direitos reservados.</p>
     </footer>
 
-    <!-- Script para renderizar o gráfico -->
+    <!-- Script para renderizar o gráfico e adicionar, editar, remover ativos -->
     <script>
         var ctx = document.getElementById('portfolioChart').getContext('2d');
+        var chartData = {
+            labels: [], // Inicia vazio
+            datasets: [{
+                label: 'Portfólio do Cliente',
+                data: [], // Inicia vazio
+                backgroundColor: []
+            }]
+        };
         var portfolioChart = new Chart(ctx, {
             type: 'pie', // Gráfico de pizza
-            data: {
-                labels: ['PETR4 - R$ 1.800,00 (40%)', 'CPTS11 - R$ 1.500,00 (30%)', 'BBAS4 - R$ 1.700,00 (20%)', 'MXRF11 - R$ 1.600,00 (10%)'], // Labels com ações e valores
-                datasets: [{
-                    label: 'Portfólio do Cliente',
-                    data: [1800, 1500, 1700, 1600], // Valores correspondentes
-                    backgroundColor: [
-                        '#4CAF50', // Cor para PETR4
-                        '#FFCE56', // Cor para CPTS11
-                        '#FF6384', // Cor para BBAS4
-                        '#36A2EB'  // Cor para MXRF11
-                    ],
-                }]
-            },
+            data: chartData,
             options: {
                 responsive: true,
                 plugins: {
@@ -188,6 +194,62 @@
                 }
             }
         });
+
+        // Função para adicionar um ativo à tabela e atualizar o gráfico
+        function addAsset() {
+            var name = document.getElementById('assetName').value;
+            var value = parseFloat(document.getElementById('assetValue').value);
+            if (name && !isNaN(value) && value > 0) {
+                // Adicionar à tabela
+                var table = document.getElementById('portfolioTable').getElementsByTagName('tbody')[0];
+                var row = table.insertRow();
+                row.insertCell(0).textContent = name;
+                row.insertCell(1).textContent = value.toFixed(2);
+                row.insertCell(2).textContent = 'Calculando...'; // Placeholder para porcentagem
+                row.insertCell(3).innerHTML = '<button onclick="editAsset(this)">Editar</button> <button onclick="deleteAsset(this)">Remover</button>';
+
+                // Atualizar gráfico
+                chartData.labels.push(`${name} - R$ ${value.toFixed(2)}`);
+                chartData.datasets[0].data.push(value);
+                chartData.datasets[0].backgroundColor.push('#'+Math.floor(Math.random()*16777215).toString(16)); // Cor aleatória
+                portfolioChart.update();
+
+                // Limpar campos do formulário
+                document.getElementById('assetName').value = '';
+                document.getElementById('assetValue').value = '';
+            } else {
+                alert('Por favor, insira um nome e um valor válido.');
+            }
+        }
+
+        // Função para editar um ativo na tabela
+        function editAsset(button) {
+            var row = button.parentNode.parentNode;
+            var name = row.cells[0].textContent;
+            var value = row.cells[1].textContent;
+            document.getElementById('assetName').value = name;
+            document.getElementById('assetValue').value = value;
+            row.parentNode.removeChild(row); // Remove a linha da tabela
+            // Atualize o gráfico se necessário
+        }
+
+        // Função para remover um ativo da tabela e atualizar o gráfico
+        function deleteAsset(button) {
+            var row = button.parentNode.parentNode;
+            var value = parseFloat(row.cells[1].textContent);
+            var index = chartData.datasets[0].data.indexOf(value);
+
+            if (index > -1) {
+                // Remove do gráfico
+                chartData.labels.splice(index, 1);
+                chartData.datasets[0].data.splice(index, 1);
+                chartData.datasets[0].backgroundColor.splice(index, 1);
+                portfolioChart.update();
+            }
+
+            // Remove da tabela
+            row.parentNode.removeChild(row);
+        }
     </script>
 
 </body>
