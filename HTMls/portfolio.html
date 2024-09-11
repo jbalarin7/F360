@@ -129,15 +129,12 @@
         <a href="#">Contato</a>
     </nav>
 
-    <!-- Seção do gráfico, tabela e formulário -->
     <div class="portfolio-container">
-        <!-- Área do gráfico -->
         <div class="chart-container">
             <h2>Portfólio Detalhado</h2>
             <canvas id="portfolioChart" width="400" height="200"></canvas>
         </div>
 
-        <!-- Área da tabela -->
         <div class="table-container">
             <h2>Lista de Ativos</h2>
             <table id="portfolioTable">
@@ -149,11 +146,8 @@
                         <th>Ações</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Linhas serão adicionadas aqui dinamicamente -->
-                </tbody>
             </table>
-            <div class="form-container">
+                <div class="form-container">
                 <h2>Adicionar Ativo</h2>
                 <input type="text" id="assetName" placeholder="Nome do Ativo" required>
                 <input type="number" id="assetValue" placeholder="Valor (R$)" required>
@@ -166,7 +160,6 @@
         <p>&copy; 2024 InvestControl. Todos os direitos reservados.</p>
     </footer>
 
-    <!-- Script para renderizar o gráfico e adicionar, editar, remover ativos -->
     <script>
         var ctx = document.getElementById('portfolioChart').getContext('2d');
         var chartData = {
@@ -195,12 +188,10 @@
             }
         });
 
-        // Função para adicionar um ativo à tabela e atualizar o gráfico
         function addAsset() {
             var name = document.getElementById('assetName').value;
             var value = parseFloat(document.getElementById('assetValue').value);
             if (name && !isNaN(value) && value > 0) {
-                // Adicionar à tabela
                 var table = document.getElementById('portfolioTable').getElementsByTagName('tbody')[0];
                 var row = table.insertRow();
                 row.insertCell(0).textContent = name;
@@ -208,13 +199,11 @@
                 row.insertCell(2).textContent = 'Calculando...'; // Placeholder para porcentagem
                 row.insertCell(3).innerHTML = '<button onclick="editAsset(this)">Editar</button> <button onclick="deleteAsset(this)">Remover</button>';
 
-                // Atualizar gráfico
                 chartData.labels.push(`${name} - R$ ${value.toFixed(2)}`);
                 chartData.datasets[0].data.push(value);
                 chartData.datasets[0].backgroundColor.push('#'+Math.floor(Math.random()*16777215).toString(16)); // Cor aleatória
                 portfolioChart.update();
 
-                // Limpar campos do formulário
                 document.getElementById('assetName').value = '';
                 document.getElementById('assetValue').value = '';
             } else {
@@ -222,32 +211,27 @@
             }
         }
 
-        // Função para editar um ativo na tabela
         function editAsset(button) {
             var row = button.parentNode.parentNode;
             var name = row.cells[0].textContent;
             var value = row.cells[1].textContent;
             document.getElementById('assetName').value = name;
             document.getElementById('assetValue').value = value;
-            row.parentNode.removeChild(row); // Remove a linha da tabela
-            // Atualize o gráfico se necessário
+            row.parentNode.removeChild(row);
         }
 
-        // Função para remover um ativo da tabela e atualizar o gráfico
         function deleteAsset(button) {
             var row = button.parentNode.parentNode;
             var value = parseFloat(row.cells[1].textContent);
             var index = chartData.datasets[0].data.indexOf(value);
 
             if (index > -1) {
-                // Remove do gráfico
                 chartData.labels.splice(index, 1);
                 chartData.datasets[0].data.splice(index, 1);
                 chartData.datasets[0].backgroundColor.splice(index, 1);
                 portfolioChart.update();
             }
 
-            // Remove da tabela
             row.parentNode.removeChild(row);
         }
     </script>
