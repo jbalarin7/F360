@@ -6,6 +6,50 @@
     <title>Finance360</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="HTMl/CSS/index.css" rel="stylesheet">
+    <style>
+        /* Estilos adicionais para centralizar a seção de login */
+        #login {
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 300px; /* Largura fixa para centralização */
+            text-align: center; /* Centraliza o texto dentro da seção */
+        }
+        #login form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #login label, #login input {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        /* Estilos para o botão "Comece Agora" */
+        .start-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        /* Estilos para o botão "Back to Top" */
+        .back-to-top {
+            display: none; /* Escondido por padrão */
+            position: fixed; /* Posição fixa */
+            bottom: 20px; /* Localização na parte inferior */
+            right: 30px; /* Localização à direita */
+            z-index: 99; /* Certifique-se de que não sobreponha outros elementos */
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
@@ -54,7 +98,7 @@
             <input type="text" id="username" name="username"><br><br>
             <label for="password">Senha:</label>
             <input type="password" id="password" name="password"><br><br>
-            <button class= "login-button" type="submit">Entrar</button>
+            <button class="login-button" type="submit">Entrar</button>
         </form>
     </section>
 
@@ -62,10 +106,30 @@
         <p>© 2024 Finance360. Todos os direitos reservados.</p>
     </footer>
 
+    <button onclick="scrollToTop()" id="backToTopBtn" class="back-to-top">Voltar ao Topo</button>
+
     <script>
         function scrollToLogin() {
             document.getElementById('login').scrollIntoView({ behavior: 'smooth' });
         }
+
+        window.onscroll = function() {scrollFunction()};
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                document.getElementById("backToTopBtn").style.display = "block";
+            } else {
+                document.getElementById("backToTopBtn").style.display = "none";
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // Faz o scroll suave
+        });
+}
+
     </script>
 
 </body>
