@@ -25,7 +25,7 @@
     <section class="hero">
         <h1>Gerencie suas Finanças com Inteligência</h1>
         <p>Controle seus investimentos e alcance a independência financeira com o Finance360.</p>
-        <button style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        <button onclick="scrollToLogin()" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
             Comece Agora
         </button>
     </section>
@@ -48,48 +48,26 @@
         </div>
     </div>
 
-    <!-- Seção para o gráfico -->
-    <div class="chart-container">
-        <h2>Portfólio Geral</h2>
-        <canvas id="portfolioChart" width="400" height="200"></canvas>
-    </div>
+    <!-- Seção de login -->
+    <section id="login">
+        <h2>Login</h2>
+        <form>
+            <label for="username">Usuário:</label>
+            <input type="text" id="username" name="username"><br><br>
+            <label for="password">Senha:</label>
+            <input type="password" id="password" name="password"><br><br>
+            <button type="submit">Entrar</button>
+        </form>
+    </section>
 
     <footer>
-        <p>&copy; 2024 Finance360. Todos os direitos reservados.</p>
+        <p>© 2024 Finance360. Todos os direitos reservados.</p>
     </footer>
 
-    <!-- Script para renderizar o gráfico -->
     <script>
-        var ctx = document.getElementById('portfolioChart').getContext('2d');
-        var portfolioChart = new Chart(ctx, {
-            type: 'pie', // Gráfico de pizza
-            data: {
-                labels: ['PETR4 - R$ 1.800,00 (40%)', 'CPTS11 - R$ 1.500,00 (30%)', 'BBAS4 - R$ 1.700,00 (20%)', 'MXRF11 - R$ 1.600,00 (10%)'], // Labels com ações e valores
-                datasets: [{
-                    label: 'Portfólio do Cliente',
-                    data: [1800, 1500, 1700, 1600], // Valores correspondentes
-                    backgroundColor: [
-                        '#4CAF50', // Cor para PETR4
-                        '#FFCE56', // Cor para CPTS11
-                        '#FF6384', // Cor para BBAS4
-                        '#36A2EB'  // Cor para MXRF11
-                    ],
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                var value = tooltipItem.raw;
-                                return 'R$ ' + value.toFixed(2);
-                            }
-                        }
-                    }
-                }
-            }
-        });
+        function scrollToLogin() {
+            document.getElementById('login').scrollIntoView({ behavior: 'smooth' });
+        }
     </script>
 
 </body>
