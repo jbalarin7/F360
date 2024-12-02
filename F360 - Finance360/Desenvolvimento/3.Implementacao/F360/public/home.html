@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F360 - Página Inicial</title>
+    <link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="brand">
+                <a href="home.html">F360</a>
+                <p>GESTÃO DE INVESTIMENTOS</p>
+            </div>
+            <nav class="nav-links">
+                <ul>
+                    <li><a href="home.html">Página Inicial</a></li>
+                    <li><a href="login.html">iniciar Sessão</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <!-- Seção de busca -->
+        <section class="search-section">
+            <h1>Pesquise pelo ativo desejado</h1>
+            <div class="search-bar" style="position: relative;">
+                <input id="search-input" type="text" placeholder="Digite o nome do ativo" autocomplete="off">
+                <div class="suggestions"></div>
+            </div>                        
+        </section>
+
+        <!-- Seção de Rankings -->
+        <section class="rankings">
+            <h2>Rankings de Ações</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>📈 Maiores Valores</h3>
+                </div>
+                <div class="ranking-card" id="dividendos">
+                    <h3>💰 Dividendos no mês</h3>
+                    <div id="dividendosContainer" class="dividendos-list">
+                        <p>Carregando os maiores pagadores de dividendos...</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>📊 Receitas</h3>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 F360. Todos os direitos reservados.</p>
+    </footer>
+    <script src="js/home.js"></script>
+</body>
+</html>

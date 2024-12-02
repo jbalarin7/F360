@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance360 - Portfólio</title>
+    <link rel="stylesheet" href="css/portfolio.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1>Finance360</h1>
+            <nav class="navbar">
+                <a href="home.html">Página Inicial</a>
+                <a href="portfolio.html">Portfólio</a>
+                <a href="logout">Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="portfolio-container">
+        <h2>Gestão do Portfólio</h2>
+        <p>Adicione, visualize ou edite seus investimentos:</p>
+
+        <!-- Formulário para adicionar ou editar investimentos -->
+        <form id="investmentForm">
+            <input type="hidden" id="investmentId" value=""> <!-- Usado para edição -->
+            <label for="ticker">Ativo:</label>
+            <input type="text" id="ticker" placeholder="Ex: PETR4" required>
+            <label for="value">Valor:</label>
+            <input type="number" id="value" step="0.01" placeholder="R$ 0,00" required>
+            <label for="quantity">Quantidade:</label>
+            <input type="number" id="quantity" placeholder="0" required>
+            <button type="submit">Salvar</button>
+        </form>
+
+        <!-- Tabela para exibir os investimentos -->
+        <table class="investments-table">
+            <thead>
+                <tr>
+                    <th>Ativo</th>
+                    <th>Valor</th>
+                    <th>Quantidade</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="investmentsTableBody">
+                <!-- Os dados serão inseridos dinamicamente -->
+            </tbody>
+        </table>
+    </main>
+
+    <footer class="footer">
+        <p>© 2024 F360 - Gestão de Investimentos</p>
+    </footer>
+
+    <script src="js/portfolio.js"></script>
+</body>
+</html>

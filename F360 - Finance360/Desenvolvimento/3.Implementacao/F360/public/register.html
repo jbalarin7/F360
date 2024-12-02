@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar</title>
+    <link rel="stylesheet" href="css/register.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1 class="header-title">F360</h1>
+        <p class="header-subtitle">Bem-vindo ao centro do investidor</p>
+    </header>
+
+    <!-- Container de registro -->
+    <main>
+        <div class="register-container">
+            <h2 class="register-title">Registrar</h2>
+            <form id="registerForm" class="register-form">
+                <input type="email" id="registerEmail" class="register-input" placeholder="Email" required>
+                <input type="password" id="registerPassword" class="register-input" placeholder="Senha" required>
+                <button type="submit" class="register-button">Registrar</button>
+            </form>
+            <a href="/login.html" class="login-link">Já tem uma conta? Faça login</a>
+            <button onclick="window.location.href='/index.html'" class="back-button">Voltar para a Tela Inicial</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2024 F360. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="js/auth.js" defer></script>
+</body>
+</html>
