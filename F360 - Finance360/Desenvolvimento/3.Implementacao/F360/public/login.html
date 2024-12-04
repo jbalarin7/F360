@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login - F360</title>
     <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
@@ -16,27 +16,23 @@
     <main>
         <!-- Container de login -->
         <div class="login-container">
-            <h2 class="login-title">Login</h2>
-            <form id="loginForm" class="login-form">
-                <input type="email" id="loginEmail" class="login-input" placeholder="Email" required>
-                <input type="password" id="loginPassword" class="login-input" placeholder="Senha" required>
-                <div class="checkbox-container">
-                    <label>
-                        <input type="checkbox" id="keepLogged" class="checkbox"> Manter logado
-                    </label>
-                </div>
-                <button type="submit" class="login-button">Login</button>
+            <h2 class="login-title">Acesse sua conta</h2>
+            <form id="login-form">
+                <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
+                <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                <button type="submit">Entrar</button>
             </form>
-            <a href="/register.html" class="register-link">Não tem uma conta? Registre-se</a>
-            <button onclick="window.location.href='/home.html'" class="back-button">Voltar para a Tela Inicial</button>
+            <a href="/register.html" class="register-link">Não tem uma conta? Cadastre-se</a>
+            <button class="back-button">Voltar para a Tela Inicial</button>
         </div>
     </main>
 
     <!-- Footer -->
     <footer class="footer">
-        <p>© 2024 F360. Todos os direitos reservados.</p>
+        <p>&copy; 2024 F360. Todos os direitos reservados.</p>
     </footer>
 
     <script src="js/auth.js" defer></script>
+    <script src="js/login.js"></script>
 </body>
 </html>

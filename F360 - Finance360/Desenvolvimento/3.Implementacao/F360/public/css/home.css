@@ -272,29 +272,57 @@ footer a:hover {
 }
 
 /* Card Geral */
-.ranking-card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 250px;
-    text-align: center;
+.rankings .cards {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
+    justify-content: center; /* Centraliza os itens horizontalmente */
+    gap: 20px; /* Espaçamento entre os cards */
+    flex-wrap: wrap; /* Permite que os cards se ajustem em múltiplas linhas, caso necessário */
 }
 
-/* Imagem no Card */
-.ranking-card img {
-    max-width: 50px;
-    margin-bottom: 10px;
+.rankings .card, 
+.rankings .ranking-card {
+    width: 300px; /* Largura fixa para os cards */
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Título do Card */
-.ranking-card h3 {
-    font-size: 18px;
-    margin: 10px 0;
+.rankings .card:hover, 
+.rankings .ranking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.rankings h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #004d61;
+}
+
+.rankings ul {
+    list-style: none; /* Remove os marcadores (bolinhas) */
+    padding: 0; /* Remove o espaçamento interno padrão */
+    margin: 0; /* Remove o espaçamento externo padrão */
+}
+
+.rankings li {
+    margin: 5px 0; /* Adiciona espaço entre os itens da lista */
+}
+
+.ranking-link {
+    text-decoration: none;
+    color: #004d61;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.ranking-link:hover {
+    color: #007bff;
+    text-decoration: underline;
 }
 
 /* Estilização da Lista de Dividendos */
@@ -337,6 +365,62 @@ footer a:hover {
 .empresa-link:hover {
     color: #0056b3; /* Cor mais escura ao passar o mouse */
 }
+
+/* Seção de Ações Recentes */
+.recent-actions {
+    text-align: center;
+    margin: 30px 20px;
+}
+
+.recent-actions h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #004d61;
+}
+
+.recent-actions ul {
+    list-style: none;
+    padding: 0;
+}
+
+.recent-actions li {
+    background: white;
+    margin: 10px auto;
+    padding: 10px 20px;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    font-size: 1rem;
+    color: #333;
+}
+
+.recentes {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.recentes-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.recent-item {
+    background: #ffffff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.recent-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
 
 /* Animações */
 @keyframes fadeIn {

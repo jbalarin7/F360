@@ -1,58 +1,78 @@
 import express from 'express';
-const router = express.Router();
 import db from '../database/db.js';
-import jwt from 'jsonwebtoken';
 
+const router = express.Router();
+
+/// Middleware para verificar autenticação
 router.use((req, res, next) => {
-    const token = req.headers.authorization;
-    if (!token) {
-        return res.status(401).json({ error: 'Token não fornecido' });
-    }
-
-    try {
-        const decoded = jwt.verify(token, 'sua_chave_secreta'); // Substitua por sua chave secreta
-        req.user = decoded; // Armazena os dados do usuário no request
-        next();
-    } catch (err) {
-        return res.status(401).json({ error: 'Token inválido' });
-    }
-});
-
-router.use((req, res, next) => {
-    if (!req.session || !req.session.user) {
-        return res.status(401).json({ error: 'Usuário não autenticado' });
+    if (!req.session.userId) {
+        return res.status(401).json({ error: 'Não autenticado.' });
     }
     next();
 });
 
-router.get('/searchStocks', (req, res) => {
-    const { q } = req.query;
+router.get('/', (req, res) => {
+    const userId = req.session.userId;
+    console.log('userId da sessão:', userId);  // Verifique no log
 
-    if (!q || q.trim() === '') {
-        return res.status(400).json({ error: 'Nenhum termo de busca fornecido.' });
+    db.all('SELECT * FROM investments WHERE user_id = ?', [userId], (err, rows) => {
+        if (err) return res.status(500).json({ error: 'Erro ao buscar investimentos.' });
+        res.status(200).json(rows);
+    });
+});
+
+// Adicionar investimento
+router.post('/', (req, res) => {
+    const { ticker, value, quantity } = req.body;
+    const userId = req.session.userId;
+
+    if (!userId) {
+        return res.status(401).json({ error: 'Usuário não autenticado.' });
     }
 
-    const query = `SELECT ticker, name FROM stocks WHERE ticker LIKE ? OR name LIKE ? LIMIT 10`;
-    db.all(query, [`%${q}%`, `%${q}%`], (err, rows) => {
-        if (err) {
-            console.error('Erro ao buscar dados no banco:', err.message);
-            return res.status(500).json({ error: 'Erro ao buscar dados no banco.' });
-        }
+    // Verifique se os dados necessários estão sendo enviados
+    console.log('Dados recebidos para o novo investimento:', { ticker, value, quantity, userId });
 
-        res.json(rows);
+    db.run(
+        `INSERT INTO investments (user_id, ticker, value, quantity) VALUES (?, ?, ?, ?)`,
+        [userId, ticker, value, quantity],
+        function (err) {
+            if (err) {
+                console.error('Erro ao inserir investimento:', err); // Log o erro
+                return res.status(500).json({ error: 'Erro ao adicionar investimento.' });
+            }
+            console.log('Investimento adicionado com sucesso:', this.lastID);
+            res.status(201).json({ message: 'Investimento adicionado!' });
+        }
+    );
+});
+
+//Editar Investimento
+router.put('/:id', (req, res) => {
+    const { ticker, value, quantity } = req.body;
+    const { id } = req.params;
+    const userId = req.session.userId;
+
+    db.run(
+        `UPDATE investments SET ticker = ?, value = ?, quantity = ? WHERE id = ? AND user_id = ?`,
+        [ticker, value, quantity, id, userId],
+        (err) => {
+            if (err) return res.status(500).json({ error: 'Erro ao atualizar investimento.' });
+            res.status(200).json({ message: 'Investimento atualizado!' });
+        }
+    );
+});
+
+// Excluir investimento
+router.delete('/:id', (req, res) => {
+    const { id } = req.params;
+    const userId = req.session.userId;
+
+    db.run(`DELETE FROM investments WHERE id = ? AND user_id = ?`, [id, userId], (err) => {
+        if (err) return res.status(500).json({ error: 'Erro ao excluir investimento.' });
+        res.status(200).json({ message: 'Investimento excluído!' });
     });
 });
 
-router.get('/investments', (req, res) => {
-    const userId = req.session.user.id;
-    const query = 'SELECT * FROM investments WHERE user_id = ?';
-    db.all(query, [userId], (err, rows) => {
-        if (err) {
-            console.error('Erro ao buscar investimentos:', err.message);
-            return res.status(500).json({ error: 'Erro ao buscar investimentos.' });
-        }
-        res.json(rows || []); // Retorna um array vazio se não houver resultados
-    });
-});
 
 export default router;

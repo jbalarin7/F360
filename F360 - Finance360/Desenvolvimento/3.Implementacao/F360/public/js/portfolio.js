@@ -1,132 +1,187 @@
-const apiUrl = '/api/investments';
-const token = localStorage.getItem('token');
-
-fetch('/api/investments', {
-    method: 'GET',
-    headers: { 'Authorization': token },
-})
-
 document.addEventListener('DOMContentLoaded', async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        alert('Você precisa fazer login primeiro!');
-        window.location.href = '/login.html';
-        return;
+    try {
+        const response = await fetch('/api/investments', {
+            method: 'GET',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${document.cookie}` // Envia o cookie de sessão
+            },
+        });
+
+        if (!response.ok) {
+            alert('Erro ao carregar investimentos. Faça login novamente.');
+            window.location.href = '/login.html';
+            return;
+        }
+
+        const investments = await response.json();
+        renderInvestments(investments); // Renderiza os investimentos
+    } catch (error) {
+        console.error('Erro ao carregar investimentos:', error);
+        alert('Erro ao carregar investimentos.');
     }
-
-    // Verificar se o token é válido
-    const response = await fetch('/auth/validate', {
-        method: 'GET',
-        headers: { Authorization: token },
-    });
-
-    if (!response.ok) {
-        alert('Sessão expirada. Faça login novamente.');
-        localStorage.removeItem('token');
-        window.location.href = '/login.html';
-        return;
-    }
-
-    const data = await response.json();
-    console.log('Usuário autenticado:', data.user);
 });
 
-// Carregar investimentos
-function loadInvestments() {
-    const token = localStorage.getItem('token'); // Recupera o token do armazenamento local
+document.getElementById('logoutButton').addEventListener('click', async () => {
+    try {
+        const response = await fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
 
-    fetch(apiUrl, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}` }, // Inclui o token no cabeçalho
-    })
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error('Erro ao carregar investimentos');
-            }
-            return res.json();
-        })
-        .then((data) => {
-            const tableBody = document.getElementById('investmentsTableBody');
-            tableBody.innerHTML = '';
-            data.forEach((investment) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${investment.ticker}</td>
-                    <td>R$ ${investment.value.toFixed(2)}</td>
-                    <td>${investment.quantity}</td>
-                    <td>
-                        <button onclick="editInvestment(${investment.id})">Editar</button>
-                        <button onclick="deleteInvestment(${investment.id})">Excluir</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        })
-        .catch((error) => console.error('Erro ao carregar investimentos:', error));
+        if (response.ok) {
+            alert('Logout realizado com sucesso!');
+            window.location.href = '/login.html'; // Redireciona para a tela de login
+        } else {
+            alert('Erro ao tentar fazer logout.');
+        }
+    } catch (error) {
+        console.error('Erro ao fazer logout:', error);
+    }
+});
+
+function renderInvestments(investments) {
+    const investmentsContainer = document.getElementById('investments-container');
+    investmentsContainer.innerHTML = investments.map(investment => `
+        <tr data-id="${investment.id}">
+            <td class="ticker">${investment.ticker}</td>
+            <td class="value">R$ ${investment.value.toFixed(2)}</td>
+            <td class="quantity">${investment.quantity}</td>
+            <td>
+                <button onclick="editInvestment(${investment.id})">Editar</button>
+                <button onclick="deleteInvestment(${investment.id})">Excluir</button>
+            </td>
+        </tr>
+    `).join('');
 }
 
-// Adicionar ou editar investimento
-document.getElementById('investmentForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const token = localStorage.getItem('token'); // Recupera o token
+document.getElementById('investmentForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
     const id = document.getElementById('investmentId').value;
     const ticker = document.getElementById('ticker').value;
     const value = parseFloat(document.getElementById('value').value);
     const quantity = parseInt(document.getElementById('quantity').value);
 
     const method = id ? 'PUT' : 'POST';
-    const url = id ? `${apiUrl}/${id}` : apiUrl;
+    const url = id ? `/api/investments/${id}` : '/api/investments';
 
-    fetch(url, {
-        method,
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, // Inclui o token
-        },
-        body: JSON.stringify({ ticker, value, quantity }),
-    })
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error('Erro ao salvar investimento');
-            }
-            return res.json();
-        })
-        .then(() => {
-            loadInvestments();
-            document.getElementById('investmentForm').reset();
-        })
-        .catch((error) => console.error('Erro ao salvar investimento:', error));
+    try {
+        const response = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ticker, value, quantity }),
+        });
+
+        if (response.ok) {
+            alert('Investimento salvo com sucesso!');
+            window.location.reload(); // Atualiza a página
+        } else {
+            alert('Erro ao salvar investimento.');
+        }
+    } catch (error) {
+        console.error('Erro ao salvar investimento:', error);
+    }
 });
 
-// Editar investimento
+async function deleteInvestment(id) {
+    try {
+        const response = await fetch(`/api/investments/${id}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            alert('Investimento excluído!');
+            window.location.reload(); // Atualiza a página
+        } else {
+            alert('Erro ao excluir investimento.');
+        }
+    } catch (error) {
+        console.error('Erro ao excluir investimento:', error);
+    }
+}
+
 function editInvestment(id) {
-    const token = localStorage.getItem('token');
-
-    fetch(`${apiUrl}/${id}`, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
-    })
-        .then((res) => res.json())
-        .then((investment) => {
-            document.getElementById('investmentId').value = investment.id;
-            document.getElementById('ticker').value = investment.ticker;
-            document.getElementById('value').value = investment.value;
-            document.getElementById('quantity').value = investment.quantity;
-        })
-        .catch((error) => console.error('Erro ao carregar investimento:', error));
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    document.getElementById('investmentId').value = id;
+    document.getElementById('ticker').value = row.querySelector('.ticker').textContent;
+    document.getElementById('value').value = row.querySelector('.value').textContent.replace('R$ ', '');
+    document.getElementById('quantity').value = row.querySelector('.quantity').textContent;
 }
 
-function deleteInvestment(id) {
-    const token = localStorage.getItem('token');
+// Função para gerar o gráfico de pizza
+function renderPieChart(investments) {
+    const investmentChart = document.getElementById('investmentChart').getContext('2d');
+    
+    // Calculando os valores totais dos investimentos
+    const totalValue = investments.reduce((acc, investment) => acc + (investment.value * investment.quantity), 0);
 
-    fetch(`${apiUrl}/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-    })
-        .then(() => loadInvestments())
-        .catch((error) => console.error('Erro ao deletar investimento:', error));
+    // Dados para o gráfico
+    const chartData = investments.map(investment => ({
+        label: investment.ticker,
+        value: (investment.value * investment.quantity) / totalValue * 100
+    }));
+
+    const data = {
+        labels: chartData.map(item => item.label),
+        datasets: [{
+            data: chartData.map(item => item.value),
+            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#FF9F40'],
+            hoverBackgroundColor: ['#FF758F', '#49C8F2', '#FFD03B', '#4CD9D5', '#FFAA58'],
+        }]
+    };
+
+    // Opções do gráfico
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.label + ': ' + tooltipItem.raw.toFixed(2) + '%';
+                    }
+                }
+            }
+        }
+    };
+
+    // Criando o gráfico
+    new Chart(investmentChart, {
+        type: 'pie',
+        data: data,
+        options: options
+    });
 }
 
-// Inicializar
-loadInvestments();
+// Modificar a função de renderização dos investimentos para incluir o gráfico
+function renderInvestments(investments) {
+    const investmentsContainer = document.getElementById('investments-container');
+    investmentsContainer.innerHTML = investments.map(investment => `
+        <tr data-id="${investment.id}">
+            <td class="ticker">${investment.ticker}</td>
+            <td class="value">R$ ${investment.value.toFixed(2)}</td>
+            <td class="quantity">${investment.quantity}</td>
+            <td>
+                <button onclick="editInvestment(${investment.id})">Editar</button>
+                <button onclick="deleteInvestment(${investment.id})">Excluir</button>
+            </td>
+        </tr>
+    `).join('');
+
+    // Gerar o gráfico de pizza
+    renderPieChart(investments);
+}
+
+const MAIN_SERVER_URL = "http://localhost:3000";
+
+// Atualiza o redirecionamento do botão "Voltar para a Tela Inicial"
+document.addEventListener("DOMContentLoaded", () => {
+    const backButton = document.querySelector('.home-button');
+    if (backButton) {
+        backButton.addEventListener('click', () => {
+            window.location.href = `${MAIN_SERVER_URL}/home.html`;
+        });
+    }
+});

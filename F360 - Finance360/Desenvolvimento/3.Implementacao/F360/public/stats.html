@@ -1,66 +1,55 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes do Ativo</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="css/stats.css">
+    <title>Resumo da Ação</title>
+    <link rel="stylesheet" href="/css/stats.css">
 </head>
 <body>
-    <!-- Cabeçalho -->
     <header>
         <div class="header-container">
             <div class="brand">
-                <a href="#">F360</a>
-                <p>Gestão de Investimentos</p>
+                <a href="home.html">F360</a>
+                <p>GESTÃO DE INVESTIMENTOS</p>
             </div>
             <nav class="nav-links">
                 <ul>
                     <li><a href="home.html">Página Inicial</a></li>
-                    <li><a href="#">Históricos</a></li>
-                    <li><a href="#">Portfólio</a></li>
-                    <li><a href="#">Conta</a></li>
+                    <li><a href="login.html">Iniciar Sessão</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <!-- Conteúdo Principal -->
     <main>
-        <section class="stats-section">
-            <div class="container">
-                <div class="stats-wrapper">
-                    <!-- Exibição do gráfico -->
-                    <div class="chart-container">
-                        <h2 id="asset-name"></h2>
-                        <canvas id="stockChart"></canvas>
-                    </div>
+        <section id="action-summary" class="stock-container">
+            <!-- Cabeçalho com logo e título -->
+            <div class="stock-header">
+                <img id="action-logo" alt="Logo da Empresa">
+                <h2 id="action-title">Carregando...</h2>
+            </div>
 
-                    <!-- Caixa de Comparação ao lado do gráfico -->
-                    <div class="compare-section">
-                        <input type="text" id="compareTicker" placeholder="Digite um ativo para comparar" />
-                        <button id="compareButton">Comparar</button>
-                        <h3 id="compare-asset-name">Ativo Comparado: --</h3>
-                    </div>
+            <!-- Conteúdo com gráfico e informações -->
+            <div class="stock-content">
+                <!-- Gráfico -->
+                <div class="stock-graph">
+                    <canvas id="chart"></canvas>
                 </div>
 
-                <!-- Filtros de Período -->
-                <div class="filters">
-                    <button id="btn7Days">Últimos 7 Dias</button>
-                    <button id="btn15Days">Últimos 15 Dias</button>
-                    <button id="btn30Days">Últimos 30 Dias</button>
+                <!-- Informações da ação -->
+                <div class="stock-info" id="action-details">
+                    <!-- Detalhes da ação serão carregados via JavaScript -->
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Rodapé -->
     <footer>
-        © 2024 F360 - Gestão de Investimentos
+        <p>&copy; 2024 F360. Todos os direitos reservados.</p>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js -->
-    <script src="js/stats.js"></script> <!-- Seu script JS -->    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/stats.js"></script>
 </body>
 </html>

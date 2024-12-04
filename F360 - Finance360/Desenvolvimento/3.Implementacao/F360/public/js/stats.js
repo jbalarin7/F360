@@ -1,209 +1,115 @@
-let mainTickerData = [];
-let compareTickerData = [];
-let mainTickerName = "";
-let compareTickerName = "";
+const urlParams = new URLSearchParams(window.location.search);
+const ticker = urlParams.get('ticker');
 
-// Adiciona o evento de clique no botão de comparação
-document.getElementById('compareButton').addEventListener('click', () => {
-    const compareTicker = document.getElementById('compareTicker').value.toUpperCase();
-    if (compareTicker) {
-        fetchStockData(compareTicker, 10, true);
-    } else {
-        alert("Por favor, insira um ticker válido.");
-    }
-});
+const actionTitle = document.getElementById('action-title');
+const actionDetails = document.getElementById('action-details');
 
-// Função principal para buscar dados de ações
-async function fetchStockData(ticker, days = 10, compare = false) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const mainTicker = urlParams.get('ticker');
-    const tickerToFetch = compare ? ticker : mainTicker;
+function formatarData(dataISO) {
+    const data = new Date(dataISO);
+    return data.toLocaleDateString('pt-BR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    });
+}
 
+async function fetchStockInfo(ticker) {
     try {
-        const response = await fetch(`/api/stats?ticker=${tickerToFetch}&days=${days}`);
-        if (!response.ok) throw new Error('Erro ao buscar dados da API');
+        const response = await fetch(`/api/stock-info/${ticker}`);
+        if (!response.ok) throw new Error('Erro ao buscar dados da ação');
+
         const data = await response.json();
 
-        // Atualiza o nome do ativo principal e do comparado
-        if (compare) {
-            compareTickerData = data;
-            compareTickerName = data[0]?.symbol || '';
-            updateAssetNames();
-            renderComparisonChart();
-        } else {
-            mainTickerData = data;
-            mainTickerName = data[0]?.symbol || '';
-            updateAssetNames();
-            renderChart();
-        }
+        exibirResumo(data);
+        carregarDadosHistoricos(ticker);
     } catch (error) {
-        console.error('Erro ao buscar os dados:', error);
+        console.error('Erro ao buscar dados da ação:', error.message);
+        document.getElementById('action-details').innerHTML =
+            '<p>Erro ao carregar informações da ação.</p>';
     }
 }
 
-function updateAssetNames() {
-    // Atualizar o nome do Ativo Principal
-    document.getElementById('asset-name').innerText = `Ativo Principal: ${mainTickerName}`;
-    
-    // Atualizar o nome do Ativo Comparado
-    document.getElementById('compare-asset-name').innerText = `Ativo Comparado: ${compareTickerName || '--'}`;
+function exibirResumo(stockInfo) {
+    const actionTitle = document.getElementById('action-title');
+    const actionDetails = document.getElementById('action-details');
+    const actionLogo = document.getElementById('action-logo');
+
+    const changePercent = typeof stockInfo.change_percent === 'number' 
+    ? stockInfo.change_percent.toFixed(2) + "%" 
+    : "N/A";
+
+    actionTitle.textContent = `${stockInfo.ticker} - ${stockInfo.long_name || 'Resumo'}`;
+
+    actionDetails.innerHTML = `
+        <h3>Desempenho do Último Dia</h3>
+        <p> </p>
+        <p><strong>Data:</strong> ${stockInfo.date || 'N/A'}</p>
+        <p><strong>Preço de Abertura:</strong> R$ ${stockInfo.open_price || 'N/A'}</p>
+        <p><strong>Preço de Fechamento:</strong> R$ ${stockInfo.close_price || 'N/A'}</p>
+        <p><strong>Variação Percentual:</strong> ${changePercent}</p>
+        <p><strong>Volume:</strong> ${stockInfo.volume || 'N/A'}</p>
+        <p><strong>Earnings per share:</strong> ${stockInfo.earnings_per_share || 'N/A'}</p>
+    `;
+
+    // Atualiza o logo da empresa
+    if (stockInfo.logourl) {
+        actionLogo.src = stockInfo.logourl;
+    } else {
+        actionLogo.src = "";
+        actionLogo.alt = "Logo não disponível";
+    }
 }
 
-// Função para renderizar o gráfico do primeiro ativo
-function renderChart() {
-    const ctx = document.getElementById('stockChart').getContext('2d');
+async function carregarDadosHistoricos(ticker) {
+    try {
+        const response = await fetch(`/api/stock-history/${ticker}`);
+        if (!response.ok) throw new Error('Erro ao carregar dados históricos');
 
-    // Verificar se o gráfico já existe e destruí-lo antes de criar um novo
-    if (window.stockChart instanceof Chart) {
-        window.stockChart.destroy();
-    }
+        const data = await response.json();
 
-    window.stockChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: mainTickerData.map(item => item.date),
-            datasets: [{
-                label: `${mainTickerName} (Ativo Principal)`,
-                data: mainTickerData.map(item => item.close_price),
-                borderColor: 'rgba(75, 192, 192, 1)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function (tooltipItem) {
-                            const item = mainTickerData[tooltipItem.dataIndex];
-                            return [
-                                `Abertura: R$ ${item.open_price?.toFixed(2) || 'N/A'}`,
-                                `Mínimo: R$ ${item.low_price?.toFixed(2) || 'N/A'}`,
-                                `Máximo: R$ ${item.high_price?.toFixed(2) || 'N/A'}`,
-                                `Fechamento: R$ ${item.close_price?.toFixed(2) || 'N/A'}`
-                            ];
-                        }
-                    }
-                }
+        const labels = data.map((item) => item.date); // Datas
+        const closePrices = data.map((item) => item.close_price);
+
+        const ctx = document.getElementById('chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels.reverse(),
+                datasets: [{
+                    label: 'Preço de Fechamento',
+                    data: closePrices.reverse(),
+                    borderColor: 'blue',
+                    borderWidth: 2,
+                    fill: false
+                }]
             },
-            scales: {
-                y: {
-                    beginAtZero: false,
-                    ticks: {
-                        callback: function (value) {
-                            return `R$ ${value.toFixed(2)}`;
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Data'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Preço (R$)'
                         }
                     }
                 }
             }
-        }
-    });
-}
-
-// Função para renderizar o gráfico de comparação
-function renderComparisonChart() {
-    const ctx = document.getElementById('stockChart').getContext('2d');
-
-    // Verificar se o gráfico já existe e destruí-lo antes de criar um novo
-    if (window.stockChart instanceof Chart) {
-        window.stockChart.destroy();
+        });
+    } catch (error) {
+        console.error('Erro ao carregar dados do gráfico:', error);
     }
-
-    // Mesclar os dados de ambos os ativos, ordenando por data
-    const combinedData = [...mainTickerData, ...compareTickerData];
-    
-    // Ordenar os dados pela data em ordem crescente
-    const sortedData = combinedData.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    // Extrair as datas únicas, já ordenadas
-    const uniqueDates = Array.from(new Set(sortedData.map(item => item.date)));
-
-    // Para cada data única, buscamos os dados mais próximos (ou iguais) de ambos os ativos
-    const mainDataForChart = uniqueDates.map(date => {
-        return mainTickerData.find(item => item.date === date) || { close_price: null };
-    });
-
-    const compareDataForChart = uniqueDates.map(date => {
-        return compareTickerData.find(item => item.date === date) || { close_price: null };
-    });
-
-    window.stockChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: uniqueDates,
-            datasets: [
-                {
-                    label: `${mainTickerName}`,
-                    data: mainDataForChart.map(item => item.close_price),
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                },
-                {
-                    label: `${compareTickerName}`,
-                    data: compareDataForChart.map(item => item.close_price),
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function (tooltipItem) {
-                            const datasetIndex = tooltipItem.datasetIndex;
-                            const date = uniqueDates[tooltipItem.dataIndex];
-
-                            // Dependendo do dataset (ativo), mostra os dados corretos
-                            let item;
-                            if (datasetIndex === 0) {
-                                item = mainDataForChart.find(i => i.date === date);
-                            } else {
-                                item = compareDataForChart.find(i => i.date === date);
-                            }
-
-                            // Retorna os dados do ativo correto
-                            return [
-                                `${datasetIndex === 0 ? mainTickerName : compareTickerName} - Abertura: R$ ${item.open_price?.toFixed(2) || 'N/A'}`,
-                                `${datasetIndex === 0 ? mainTickerName : compareTickerName} - Mínimo: R$ ${item.low_price?.toFixed(2) || 'N/A'}`,
-                                `${datasetIndex === 0 ? mainTickerName : compareTickerName} - Máximo: R$ ${item.high_price?.toFixed(2) || 'N/A'}`,
-                                `${datasetIndex === 0 ? mainTickerName : compareTickerName} - Fechamento: R$ ${item.close_price?.toFixed(2) || 'N/A'}`
-                            ];
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: false,
-                    ticks: {
-                        callback: function (value) {
-                            return `R$ ${value.toFixed(2)}`;
-                        }
-                    }
-                }
-            }
-        }
-    });
 }
 
-
-// Adiciona os listeners aos botões
-function addButtonListeners() {
-    document.getElementById('btn7Days').addEventListener('click', () => fetchStockData(null, 7));
-    document.getElementById('btn15Days').addEventListener('click', () => fetchStockData(null, 15));
-    document.getElementById('btn30Days').addEventListener('click', () => fetchStockData(null, 30));
-}
-
-// Atualiza o gráfico ao clicar nos botões
-function updateChart(days) {
-    fetchStockData(days);
-}
-
-// Chama a função para buscar os dados ao carregar a página
 document.addEventListener('DOMContentLoaded', () => {
-    fetchStockData();
-
-    addButtonListeners();
+    if (ticker) {
+        fetchStockInfo(ticker);
+    } else {
+        actionDetails.innerHTML = '<p>Erro: Nenhum ticker especificado.</p>';
+    }
 });
