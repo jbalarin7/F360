@@ -18,8 +18,8 @@ export async function buscarUltimos10DiasDoBanco(ticker) {
         `;
         db.all(sql, [ticker], (err, rows) => {
             if (err) {
-                console.error('Erro ao buscar últimos 10 dias:', err.message);
-                return reject(err);
+                return reject(err);                console.error('Erro ao buscar últimos 10 dias:', err.message);
+
             }
             resolve(rows || []);
         });
