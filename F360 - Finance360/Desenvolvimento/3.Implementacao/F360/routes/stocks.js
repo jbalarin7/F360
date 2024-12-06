@@ -1,3 +1,6 @@
+import StockHistory from "../modelos/StockHistory"
+
+
 // Buscar informações de uma ação específica
 app.get('/api/stock-info/:ticker', async (req, res) => {
     const { ticker } = req.params;
@@ -54,19 +57,8 @@ app.get('/api/stock-info/:ticker', async (req, res) => {
 // Rota para ranking das ações com maiores valores de fechamento
 app.get('/api/ranking/maiores-valores', async (req, res) => {
     try {
-        const sql = `
-            SELECT ticker, MAX(close_price) AS valor
-            FROM stock_history
-            GROUP BY ticker
-            ORDER BY valor DESC
-            LIMIT 5;
-        `;
-        db.all(sql, [], (err, rows) => {
-            if (err) {
-                return res.status(500).json({ error: 'Erro interno do servidor ao consultar banco' });
-            }
-            res.status(500).json(rows);
-        });
+        const resultado = await StockHistory.maioresValores()
+        res.status(200).json(resultado)
     } catch (error) {
         res.status(500).json({ error: 'Erro interno do servidor' });
     }
@@ -75,42 +67,20 @@ app.get('/api/ranking/maiores-valores', async (req, res) => {
 // Rota para ranking baseado nos maiores lucros por ação (EPS)
 app.get('/api/ranking/earnings', async (req, res) => {
     try {
-        const sql = `
-            SELECT ticker, long_name, earnings_per_share
-            FROM stock_history
-            WHERE earnings_per_share IS NOT NULL
-            ORDER BY earnings_per_share DESC
-            LIMIT 5;
-        `;
-        const rows = await new Promise((resolve, reject) => {
-            db.all(sql, (err, rows) => {
-                if (err) reject(err);
-                resolve(rows);
-            });
-        });
-        res.status(200).json(rows);
+        const resultado = await StockHistory.earnings()
+        res.status(200).json(resultado)
     } catch (error) {
-        res.status(500).send('Erro interno no servidor');
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
 // Rota para ranking das ações com maior volume (receita)
 app.get('/api/ranking/receitas', async (req, res) => {
     try {
-        const sql = `
-            SELECT ticker, long_name, MAX(volume) AS receita
-            FROM stock_history
-            GROUP BY ticker
-            ORDER BY receita DESC
-            LIMIT 5;
-        `;
-        const rows = await new Promise((resolve, reject) => {
-            db.all(sql, (err, rows) => {
-                if (err) reject(err);
-                resolve(rows);
-            });
-        });
-        res.status(200).json(rows);
+        const resultado = await StockHistory.receitas()
+
+        res.status(200).json(resultado)
+       
     } catch (error) {
         res.status(500).send('Erro interno no servidor');
     }

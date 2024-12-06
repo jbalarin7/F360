@@ -99,6 +99,88 @@ class StockHistory{
         });
     }
     
+
+    
+    buscarDadosDoBanco(ticker) {
+        return new Promise((resolve, reject) => {
+            const data = obterUltimaDataValida();
+            const sql = `
+                SELECT * FROM stock_history
+                WHERE ticker = ? AND date = ?
+            `;
+        
+            conexao.query(sql, [ticker, data], (erro, resultado) => {
+                if (erro) {
+                    console.error('Erro ao buscar dados no banco:', erro.message);
+                    return reject(erro);
+                }
+                // Caso não encontre nenhuma linha, retornamos null
+                resolve(resultado && resultado.length > 0 ? resultado[0] : null);
+            });
+        });
+    }
+
+
+    maioresValores(){
+            const sql = `
+                    SELECT ticker, MAX(close_price) AS valor
+                    FROM stock_history
+                    GROUP BY ticker
+                    ORDER BY valor DESC
+                    LIMIT 5;
+            `;
+        return new Promise((resolve,reject)=>{
+            conexao.query(sql,(erro,resultado)=>{
+                if(erro){
+                    reject(erro);
+                    
+                }else{
+                    resolve(resultado)
+                }
+            })
+        })
+    }
+
+        earnings(){
+            const sql = `
+                SELECT ticker, long_name, earnings_per_share
+                FROM stock_history
+                WHERE earnings_per_share IS NOT NULL
+                ORDER BY earnings_per_share DESC
+                LIMIT 5;
+            `;
+            return new Promise((resolve,reject)=>{
+                conexao.query(sql,(erro,resultado)=>{
+                    if(erro){
+                        reject(erro);
+                
+                    }else{
+                        resolve(resultado)
+                    }
+                })
+            })
+        }   
+
+        receitas(){
+            const sql = `
+                SELECT ticker, long_name, MAX(volume) AS receita
+                FROM stock_history
+                GROUP BY ticker
+                ORDER BY receita DESC
+                LIMIT 5;
+            `;
+            return new Promise((resolve,reject)=>{
+                conexao.query(sql,(erro,resultado)=>{
+                    if(erro){
+                        reject(erro);
+                
+                    }else{
+                        resolve(resultado)
+                    }
+                })
+            })
+        }   
+
     // Função utilitária para executar queries com Promises
     executarQuery(sql, params) {
         return new Promise((resolve, reject) => {
@@ -109,5 +191,7 @@ class StockHistory{
         });
     }
 }
+
+
 
 export default new StockHistory;

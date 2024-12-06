@@ -2,15 +2,10 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import fetch from 'node-fetch';
 import { fork } from 'child_process';
 
 // Importação de módulos personalizados
 import searchRoutes from './routes/searchRoutes.js';
-import { buscarDadosDoBanco, salvarOuAtualizarDados, obterUltimaDataValida } from './database/dataService.js';
-import db from './database/db.js';
-
-import conexao from './database/conexao.js';
 
 // Configuração de paths
 const __filename = fileURLToPath(import.meta.url);
