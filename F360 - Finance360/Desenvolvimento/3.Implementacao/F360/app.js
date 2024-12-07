@@ -59,6 +59,6 @@ app.use('/api/auth', authRoutes);  // Rota de autenticação
 app.use('/api/stock', stockRoutes);  // Rota de autenticação
 
 // Iniciar o servidor
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
     console.log(`Servidor principal rodando na porta ${port}`);
 });
