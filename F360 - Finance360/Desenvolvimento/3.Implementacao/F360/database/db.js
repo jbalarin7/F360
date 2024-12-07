@@ -1,18 +1,23 @@
 import sqlite3 from 'sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { open } from 'sqlite';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+let databaseInstance = null;
 
-const dbPath = path.resolve(__dirname, '../database/db.db');
-
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('Erro ao conectar ao banco de dados:', err.message);
-    } else {
-        console.log('Conectado ao banco de dados SQLite.');
+// Função para abrir o banco de dados
+const openDatabase = async () => {
+    if (!databaseInstance) {
+        databaseInstance = await open({
+            filename: './database/db.db',
+            driver: sqlite3.Database
+        });
     }
-});
 
-export default db; // Exporta o banco de dados como padrão
+    return databaseInstance;
+};
+
+// Exportando a função assíncrona para obter a conexão
+const getDb = async () => {
+    return await openDatabase();
+};
+
+export default getDb;

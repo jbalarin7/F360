@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const backButton = document.querySelector('.back-button');
     if (backButton) {
         backButton.addEventListener('click', () => {
-            window.location.href = `${MAIN_SERVER_URL}/home.html`;
+            window.location.href = `${MAIN_SERVER_URL}/index.html`;
         });
     }
 });

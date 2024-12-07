@@ -13,13 +13,16 @@ function formatarData(dataISO) {
     });
 }
 
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
 async function fetchStockInfo(ticker) {
     try {
-        const response = await fetch(`/api/stock-info/${ticker}`);
+        const response = await fetch(`/api/stock/${ticker}`);
         if (!response.ok) throw new Error('Erro ao buscar dados da ação');
 
         const data = await response.json();
-
         exibirResumo(data);
         carregarDadosHistoricos(ticker);
     } catch (error) {
@@ -34,20 +37,19 @@ function exibirResumo(stockInfo) {
     const actionDetails = document.getElementById('action-details');
     const actionLogo = document.getElementById('action-logo');
 
-    const changePercent = typeof stockInfo.change_percent === 'number' 
-    ? stockInfo.change_percent.toFixed(2) + "%" 
+    const changePercent = typeof stockInfo.regular_market_change_percent === 'number' 
+    ? stockInfo.regular_market_change_percent.toFixed(2) + "%" 
     : "N/A";
 
-    actionTitle.textContent = `${stockInfo.ticker} - ${stockInfo.long_name || 'Resumo'}`;
-
+    actionTitle.textContent = `${stockInfo.symbol} - ${stockInfo.long_name || 'Resumo'}`;
     actionDetails.innerHTML = `
-        <h3>Desempenho do Último Dia</h3>
+        <h3>Desempenho no Dia</h3>
         <p> </p>
-        <p><strong>Data:</strong> ${stockInfo.date || 'N/A'}</p>
-        <p><strong>Preço de Abertura:</strong> R$ ${stockInfo.open_price || 'N/A'}</p>
-        <p><strong>Preço de Fechamento:</strong> R$ ${stockInfo.close_price || 'N/A'}</p>
+        <p><strong>Data:</strong> ${new Date(stockInfo.regular_market_time).toLocaleDateString('pt-BR') || 'N/A'}</p>
+        <p><strong>Preço de Abertura:</strong> R$ ${stockInfo.regular_market_open || 'N/A'}</p>
+        <p><strong>Preço de Fechamento:</strong> R$ ${stockInfo.regular_market_previous_close || 'N/A'}</p>
         <p><strong>Variação Percentual:</strong> ${changePercent}</p>
-        <p><strong>Volume:</strong> ${stockInfo.volume || 'N/A'}</p>
+        <p><strong>Volume:</strong> ${stockInfo.regular_market_volume || 'N/A'}</p>
         <p><strong>Earnings per share:</strong> ${stockInfo.earnings_per_share || 'N/A'}</p>
     `;
 
