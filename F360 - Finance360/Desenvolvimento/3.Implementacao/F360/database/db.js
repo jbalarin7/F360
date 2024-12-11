@@ -1,23 +1,19 @@
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
+import { Sequelize } from 'sequelize';
 
-let databaseInstance = null;
+// Conexão com SQLite
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: './database/db.db',
+  logging: false,
+});
 
-// Função para abrir o banco de dados
-const openDatabase = async () => {
-    if (!databaseInstance) {
-        databaseInstance = await open({
-            filename: './database/db.db',
-            driver: sqlite3.Database
-        });
-    }
+(async () => {
+  try {
+    await sequelize.authenticate(); // Testa a conexão
+    console.log('Conexão estabelecida com sucesso.');
+  } catch (error) {
+    console.error('Erro ao conectar no banco:', error);
+  }
+})();
 
-    return databaseInstance;
-};
-
-// Exportando a função assíncrona para obter a conexão
-const getDb = async () => {
-    return await openDatabase();
-};
-
-export default getDb;
+export default sequelize;

@@ -64,13 +64,14 @@ function exibirResumo(stockInfo) {
 
 async function carregarDadosHistoricos(ticker) {
     try {
-        const response = await fetch(`/api/stock-history/${ticker}`);
+        const response = await fetch(`/api/stock/stock-history/${ticker}`);
         if (!response.ok) throw new Error('Erro ao carregar dados históricos');
 
         const data = await response.json();
+        console.log(data)
 
-        const labels = data.map((item) => item.date); // Datas
-        const closePrices = data.map((item) => item.close_price);
+        const labels = data.map((item) => new Date(item.regular_market_time).toLocaleDateString('pt-BR') ); // Datas
+        const closePrices = data.map((item) => item.regular_market_previous_close);
 
         const ctx = document.getElementById('chart').getContext('2d');
         new Chart(ctx, {

@@ -1,12 +1,14 @@
 import express from 'express';
-import { searchMostTradedStocksToday, searchPerformingStocksToday, searchStockData, searchStocks } from '../controllers/stockController.js';
+import StockController from '../controllers/StockController.js';
+import StockDataController from '../controllers/StockDataController.js';
 
 
 const router = express.Router();
 
-router.get('/stocks', searchStocks);
-router.get('/ranking', searchPerformingStocksToday);
-router.get('/mosttraded', searchMostTradedStocksToday);
-router.get('/:ticker', searchStockData);
+router.get('/stocks', StockController.search);
+router.get('/ranking', StockDataController.searchPerformingStocksToday);
+router.get('/mosttraded', StockDataController.searchMostTradedStocksToday);
+router.get('/:ticker', StockDataController.searchStockData);
+router.get('/stock-history/:ticker', StockDataController.searchStockHistory)
 
 export default router;

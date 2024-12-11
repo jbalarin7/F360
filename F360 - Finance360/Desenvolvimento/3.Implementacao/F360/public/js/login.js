@@ -26,14 +26,14 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
     }
 });
 
-const MAIN_SERVER_URL = "http://localhost:3000";
+
 
 // Atualiza o redirecionamento do botão "Voltar para a Tela Inicial"
 document.addEventListener("DOMContentLoaded", () => {
     const backButton = document.querySelector('.back-button');
     if (backButton) {
         backButton.addEventListener('click', () => {
-            window.location.href = `${MAIN_SERVER_URL}/index.html`;
+            window.location.href = `/index.html`;
         });
     }
 });

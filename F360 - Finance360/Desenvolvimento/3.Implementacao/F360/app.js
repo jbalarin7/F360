@@ -5,8 +5,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 // Importando as rotas
-import authRoutes from './routes/authRoutes.js';
-import stockRoutes from './routes/stockRoutes.js';
+import UserRoutes from './routes/UserRoutes.js';
+import StockRoutes from './routes/StockRoutes.js';
+import AssetRoutes from './routes/AssetRoutes.js';
 
 // Carrega variáveis de ambiente do arquivo .env
 dotenv.config();
@@ -53,10 +54,15 @@ app.use(session({
         maxAge: 3600000          // Define o tempo de expiração do cookie (1 hora)
     }
 }));
-
+// app.use((req, res, next) => {
+//     console.log(req.session); // Logando a sessão no console a cada requisição
+//     next();
+//   });
+  
 // Registrando as rotas
-app.use('/api/auth', authRoutes);  // Rota de autenticação
-app.use('/api/stock', stockRoutes);  // Rota de autenticação
+app.use('/api/auth', UserRoutes);  // Rota de autenticação
+app.use('/api/stock', StockRoutes);
+app.use('/api/portfolio', AssetRoutes);
 
 // Iniciar o servidor
 app.listen(port, '0.0.0.0', () => {
