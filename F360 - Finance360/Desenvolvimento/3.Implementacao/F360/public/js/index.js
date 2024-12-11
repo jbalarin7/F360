@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // --- FUNÇÕES DE SUGESTÕES --- //
 async function buscarSugestoes(query) {
     try {
-        const response = await fetch(`/api/stock/stocks?q=${encodeURIComponent(query)}`);
+        const response = await fetch(`/api/stock/stocks?key=${encodeURIComponent(query)}`);
         if (!response.ok) {
             mostrarErro(response.status === 500 ? 'Erro ao carregar sugestões' : 'Ação não encontrada');
         } else {
